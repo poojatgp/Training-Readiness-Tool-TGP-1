@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Training Capability Assessment</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #3e0099 0%, #d9525e 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.2em;
+            font-weight: 700;
+        }
+
+        .question {
+            margin-bottom: 35px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            border-left: 5px solid #3e0099;
+            transition: all 0.3s ease;
+        }
+
+        .question:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .question-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .option {
+            margin-bottom: 12px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .option:hover {
+            border-color: #3e0099;
+            transform: translateX(5px);
+        }
+
+        .option.selected {
+            border-color: #3e0099;
+            background: #f0f4ff;
+            box-shadow: 0 5px 15px rgba(62, 0, 153, 0.2);
+        }
+
+        .option input[type="radio"] {
+            margin-right: 15px;
+            transform: scale(1.2);
+            accent-color: #3e0099;
+        }
+
+        .option label {
+            cursor: pointer;
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .submit-btn {
+            background: linear-gradient(45deg, #3e0099, #d9525e);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 30px auto;
+            box-shadow: 0 10px 25px rgba(62, 0, 153, 0.3);
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(62, 0, 153, 0.4);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .results {
+            margin-top: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #3e0099, #d9525e);
+            color: white;
+            border-radius: 15px;
+            text-align: center;
+            display: none;
+        }
+
+        .score {
+            font-size: 3em;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .score-label {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
+
+        .recommendation {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            backdrop-filter: blur(5px);
+        }
+
+        .data-capture {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            font-size: 0.9em;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #3e0099, #d9525e);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 4px;
+        }
+
+        .intro-text {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            font-style: italic;
+            color: #2c3e50;
+            text-align: center;
+            border-left: 4px solid #3e0099;
+        }
+
+        .feedback-section {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 30px;
+            border-left: 4px solid #d9525e;
+        }
+
+        .feedback-section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3e0099;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .required {
+            color: #d9525e;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="intro-text">
+            Thanks for joining my keynote session at HRD Conference in Kuala Lumpur last week. Use this brief assessment tool to get your organisation's Training Readiness Score. I'd also appreciate if you would provide feedback on my session at the conference.
+        </div>
+        
+        <h1>🎯 Training Readiness Assessment</h1>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress"></div>
+        </div>
+        
+        <div id="questionnaire">
+            <!-- Question 1 -->
+            <div class="question">
+                <div class="question-title">Q1: Can you complete this sentence? "After training, participants will be able to _____ which will result in _____"</div>
+                <div class="option" onclick="selectAnswer('q1', 0, this)">
+                    <input type="radio" name="q1" value="0" id="q1_a">
+                    <label for="q1_a">Can't complete it clearly ("be better leaders", "improve performance")</label>
+                </div>
+                <div class="option" onclick="selectAnswer('q1', 1, this)">
+                    <input type="radio" name="q1" value="1" id="q1_b">
+                    <label for="q1_b">Can complete but outcomes are vague ("have better conversations")</label>
+                </div>
+                <div class="option" onclick="selectAnswer('q1', 2, this)">
+                    <input type="radio" name="q1" value="2" id="q1_c">
+                    <label for="q1_c">Clear, specific completion ("conduct effective performance reviews which will reduce turnover by 15%")</label>
+                </div>
+            </div>
+
+            <!-- Question 2 -->
+            <div class="question">
+                <div class="question-title">Q2: What evidence do you have that this is actually a problem worth solving?</div>
+                <div class="option" onclick="selectAnswer('q2', 0, this)">
+                    <input type="radio" name="q2" value="0" id="q2_a">
+                    <label for="q2_a">Complaints, feedback, or "everyone says..." stories</label>
+                </div>
+                <div class="option" onclick="selectAnswer('q2', 1, this)">
+                    <input type="radio" name="q2" value="1" id="q2_b">
+                    <label for="q2_b">Some data but incomplete (survey results, limited metrics)</label>
+                </div>
+                <div class="option" onclick="selectAnswer('q2', 2, this)">
+                    <input type="radio" name="q2" value="2" id="q2_c">
+                    <label for="q2_c">Clear performance data showing the gap (sales numbers, error rates, audit scores)</label>
+                </div>
+            </div>
+
+            <!-- Question 3 -->
+            <div class="question">
+                <div class="question-title">Q3: Have you confirmed this is a skills/knowledge gap that training can fix?</div>
+                <div class="option" onclick="selectAnswer('q3', 0, this)">
+                    <input type="radio" name="q3" value="0" id="q3_a">
+                    <label for="q3_a">Haven't investigated - training will help</label>
+                </div>
+                <div class="option" onclick="selectAnswer('q3', 1, this)">
+                    <input type="radio" name="q3" value="1" id="q3_b">
+                    <label for="q3_b">Mixed causes identified (some skills gaps, some system/process issues)</label>
+                </div>
+                <div class="option" onclick="selectAnswer('q3', 2, this)">
+                    <input type="radio" name="q3" value="2" id="q3_c">
+                    <label for="q3_c">Confirmed it's primarily a skills/knowledge gap (people want to perform but lack capability)</label>
+                </div>
+            </div>
+
+            <!-- Question 4 -->
+            <div class="question">
+                <div class="question-title">Q4: What's the level of manager and leadership buy-in for this training?</div>
+                <div class="option" onclick="selectAnswer('q4', 0, this)">
+                    <input type="radio" name="q4" value="0" id="q4_a">
+                    <label for="q4_a">Managers not involved in planning but they know they need to send people for training</label>
+                </div>
+                <div class="option" onclick="selectAnswer('q4', 1, this)">
+                    <input type="radio" name="q4" value="1" id="q4_b">
+                    <label for="q4_b">Some manager buy-in but not consistent across all areas</label>
+                </div>
+                <div class="option" onclick="selectAnswer('q4', 2, this)">
+                    <input type="radio" name="q4" value="2" id="q4_c">
+                    <label for="q4_c">Managers actively champion it and will support application on the job</label>
+                </div>
+            </div>
+
+            <!-- Question 5 -->
+            <div class="question">
+                <div class="question-title">Q5: How will you measure if the training worked?</div>
+                <div class="option" onclick="selectAnswer('q5', 0, this)">
+                    <input type="radio" name="q5" value="0" id="q5_a">
+                    <label for="q5_a">Satisfaction surveys ("Did you like it?")</label>
+                </div>
+                <div class="option" onclick="selectAnswer('q5', 1, this)">
+                    <input type="radio" name="q5" value="1" id="q5_b">
+                    <label for="q5_b">Some follow-up planned like spot checks, informal feedback</label>
+                </div>
+                <div class="option" onclick="selectAnswer('q5', 2, this)">
+                    <input type="radio" name="q5" value="2" id="q5_c">
+                    <label for="q5_c">Specific business metrics agreed with timeline (sales increase by X%, errors reduced by Y% within 90 days)</label>
+                </div>
+            </div>
+
+            <button class="submit-btn" id="submitBtn" onclick="calculateScore()" disabled>Answer all 5 questions first</button>
+        </div>
+
+        <div class="results" id="results">
+            <div class="score" id="totalScore">0/10</div>
+            <div class="score-label">Your Training Readiness Score</div>
+            <div class="recommendation" id="recommendation"></div>
+            <div class="data-capture" id="dataCapture"></div>
+        </div>
+
+        <!-- Feedback Section -->
+        <div class="feedback-section" id="feedbackSection" style="display: none;">
+            <h2>📝 Session Feedback</h2>
+            <p style="margin-bottom: 20px; color: #666;">Please take a moment to share your thoughts about the keynote session in Kuala Lumpur.</p>
+            
+            <form id="feedbackForm" action="https://formspree.io/f/mkgzdjvb" method="POST">
+                <div class="form-group">
+                    <label for="name">Name <span class="required">*</span></label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email <span class="required">*</span></label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="company">Company/Organization</label>
+                    <input type="text" id="company" name="company">
+                </div>
+
+                <div class="form-group">
+                    <label for="session_rating">How would you rate the keynote session? <span class="required">*</span></label>
+                    <select id="session_rating" name="session_rating" required>
+                        <option value="">Please select...</option>
+                        <option value="5">Excellent - Exceeded expectations</option>
+                        <option value="4">Very Good - Met expectations</option>
+                        <option value="3">Good - Mostly satisfied</option>
+                        <option value="2">Fair - Some concerns</option>
+                        <option value="1">Poor - Did not meet expectations</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="most_valuable">What was the most valuable part of the session?</label>
+                    <textarea id="most_valuable" name="most_valuable" placeholder="Share what resonated with you most..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="improvements">What could be improved for future sessions?</label>
+                    <textarea id="improvements" name="improvements" placeholder="Any suggestions for improvement..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="implementation">Do you plan to implement any of the concepts discussed? If yes, which ones?</label>
+                    <textarea id="implementation" name="implementation" placeholder="What will you take back to your organization..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="recommend">Would you recommend this session to others?</label>
+                    <select id="recommend" name="recommend">
+                        <option value="">Please select...</option>
+                        <option value="definitely">Definitely yes</option>
+                        <option value="probably">Probably yes</option>
+                        <option value="maybe">Maybe</option>
+                        <option value="probably_not">Probably not</option>
+                        <option value="definitely_not">Definitely not</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="additional_comments">Any additional comments or feedback?</label>
+                    <textarea id="additional_comments" name="additional_comments" placeholder="Anything else you'd like to share..."></textarea>
+                </div>
+
+                <input type="hidden" name="form_type" value="session_feedback">
+
+                <button type="submit" class="submit-btn">Submit Feedback</button>
+                
+                <div class="success-message" id="feedbackSuccess">
+                    Thank you for your feedback! Your response has been submitted successfully.
+                </div>
+                
+                <div class="error-message" id="feedbackError">
+                    There was an error submitting your feedback. Please try again.
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Simple approach - no complex randomization
+        let answers = {};
+        const totalQuestions = 5;
+
+        // Randomize options on page load
+        function randomizeOptions() {
+            const questions = document.querySelectorAll('.question');
+            questions.forEach(question => {
+                const options = Array.from(question.querySelectorAll('.option'));
+                const questionTitle = question.querySelector('.question-title');
+                
+                // Shuffle options
+                for (let i = options.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [options[i], options[j]] = [options[j], options[i]];
+                }
+                
+                // Clear and re-add
+                question.innerHTML = '';
+                question.appendChild(questionTitle);
+                options.forEach(option => question.appendChild(option));
+            });
+        }
+
+        function selectAnswer(questionId, points, optionElement) {
+            // Remove selected class from all options in this question
+            const questionDiv = optionElement.closest('.question');
+            questionDiv.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+            
+            // Add selected class and check radio
+            optionElement.classList.add('selected');
+            optionElement.querySelector('input[type="radio"]').checked = true;
+            
+            // Store answer
+            answers[questionId] = points;
+            
+            console.log('Answer selected:', questionId, points, 'Total answers:', Object.keys(answers).length);
+            
+            updateProgress();
+            updateSubmitButton();
+        }
+
+        function updateProgress() {
+            const answered = Object.keys(answers).length;
+            const progress = (answered / totalQuestions) * 100;
+            document.getElementById('progress').style.width = progress + '%';
+        }
+
+        function updateSubmitButton() {
+            const answered = Object.keys(answers).length;
+            const btn = document.getElementById('submitBtn');
+            
+            if (answered === totalQuestions) {
+                btn.disabled = false;
+                btn.textContent = 'Calculate Your Readiness Score';
+            } else {
+                btn.disabled = true;
+                btn.textContent = `Answer ${totalQuestions - answered} more question${totalQuestions - answered === 1 ? '' : 's'}`;
+            }
+        }
+
+        async function calculateScore() {
+            const score = Object.values(answers).reduce((sum, val) => sum + val, 0);
+            
+            // Submit to Formspree
+            try {
+                await fetch('https://formspree.io/f/mkgzdjvb', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        form_type: 'training_assessment',
+                        score: score,
+                        answers: answers,
+                        timestamp: new Date().toISOString()
+                    })
+                });
+            } catch (error) {
+                console.error('Error submitting assessment:', error);
+            }
+
+            // Show results
+            document.getElementById('totalScore').textContent = `${score}/10`;
+            
+            let recommendation = getRecommendation(score);
+            document.getElementById('recommendation').innerHTML = `
+                <h3 style="margin-bottom: 10px;">${recommendation.level}</h3>
+                <h4 style="margin-bottom: 15px; font-weight: normal;">${recommendation.title}</h4>
+                <p style="margin: 15px 0; font-size: 1.1em;">${recommendation.text}</p>
+                <p style="margin-top: 20px;"><strong>Recommendation:</strong> ${recommendation.action}</p>
+            `;
+
+            // Show CTA
+            const ctaContent = score <= 7 ? 
+                `<div style="border-top: 1px solid rgba(255,255,255,0.3); padding-top: 20px; margin-top: 25px;">
+                    <p style="margin-bottom: 15px;">🎯 <strong>Want help getting training-ready?</strong></p>
+                    <p style="margin-bottom: 15px; font-size: 0.95em;">We'll conduct a needs analysis to help you build the foundation for successful training.</p>
+                    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                        <input type="email" placeholder="Enter your email address" style="flex: 1; min-width: 200px; padding: 10px; border: none; border-radius: 5px; font-size: 14px;" id="emailInput">
+                        <button onclick="requestNeedsAnalysis()" style="background: white; color: #3e0099; border: none; padding: 10px 20px; border-radius: 5px; font-weight: bold; cursor: pointer;">Get Free Needs Analysis</button>
+                    </div>
+                </div>` :
+                `<div style="border-top: 1px solid rgba(255,255,255,0.3); padding-top: 20px; margin-top: 25px;">
+                    <p style="margin-bottom: 15px;">📊 <strong>Want a detailed readiness report?</strong></p>
+                    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                        <input type="email" placeholder="Enter your email address" style="flex: 1; min-width: 200px; padding: 10px; border: none; border-radius: 5px; font-size: 14px;" id="emailInput">
+                        <button onclick="requestDetailedReport()" style="background: white; color: #3e0099; border: none; padding: 10px 20px; border-radius: 5px; font-weight: bold; cursor: pointer;">Get My Report</button>
+                    </div>
+                </div>`;
+
+            document.getElementById('dataCapture').innerHTML = ctaContent;
+            
+            document.getElementById('results').style.display = 'block';
+            document.getElementById('feedbackSection').style.display = 'block';
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function getRecommendation(score) {
+            if (score >= 8) {
+                return {
+                    level: "🟢 Ready to Proceed",
+                    title: "8–10 Points",
+                    text: "Your training has strong foundations and clear success factors in place.",
+                    action: "You're well-prepared. Proceed with confidence, but ensure you capture baseline metrics before starting."
+                };
+            } else if (score >= 5) {
+                return {
+                    level: "🟡 Proceed with Caution",
+                    title: "5–7 Points", 
+                    text: "Some readiness gaps exist that could undermine success.",
+                    action: "Address the missing elements before proceeding. Consider a pilot program or additional stakeholder alignment work."
+                };
+            } else {
+                return {
+                    level: "🔴 Not Ready",
+                    title: "0–4 Points",
+                    text: "Your training lacks critical success foundations and will likely fail.",
+                    action: "Stop and do the groundwork first. Focus on problem definition, evidence gathering, and stakeholder buy-in before spending on training."
+                };
+            }
+        }
+
+        async function requestNeedsAnalysis() {
+            const email = document.getElementById('emailInput').value;
+            if (email && email.includes('@')) {
+                try {
+                    await fetch('https://formspree.io/f/mkgzdjvb', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            form_type: 'needs_analysis_request',
+                            email: email,
+                            score: Object.values(answers).reduce((sum, val) => sum + val, 0),
+                            timestamp: new Date().toISOString()
+                        })
+                    });
+                    
+                    const btn = event.target;
+                    btn.innerHTML = '✓ Request Sent!';
+                    btn.disabled = true;
+                } catch (error) {
+                    alert('Error sending request. Please try again.');
+                }
+            } else {
+                alert('Please enter a valid email address.');
+            }
+        }
+
+        async function requestDetailedReport() {
+            const email = document.getElementById('emailInput').value;
+            if (email && email.includes('@')) {
+                try {
+                    await fetch('https://formspree.io/f/mkgzdjvb', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            form_type: 'detailed_report_request',
+                            email: email,
+                            score: Object.values(answers).reduce((sum, val) => sum + val, 0),
+                            timestamp: new Date().toISOString()
+                        })
+                    });
+                    
+                    const btn = event.target;
+                    btn.innerHTML = '✓ Report Requested!';
+                    btn.disabled = true;
+                } catch (error) {
+                    alert('Error sending request. Please try again.');
+                }
+            } else {
+                alert('Please enter a valid email address.');
+            }
+        }
+
+        // Feedback form handling
+        document.getElementById('feedbackForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const form = e.target;
+            const btn = form.querySelector('button[type="submit"]');
+            const success = document.getElementById('feedbackSuccess');
+            const error = document.getElementById('feedbackError');
+            
+            btn.textContent = 'Submitting...';
+            btn.disabled = true;
+            success.style.display = 'none';
+            error.style.display = 'none';
+            
+            try {
+                const formData = new FormData(form);
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: { 'Accept': 'application/json' }
+                });
+                
+                if (response.ok) {
+                    success.style.display = 'block';
+                    form.reset();
+                } else {
+                    error.style.display = 'block';
+                }
+            } catch (err) {
+                error.style.display = 'block';
+            }
+            
+            btn.textContent = 'Submit Feedback';
+            btn.disabled = false;
+        });
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            randomizeOptions();
+            console.log('Page loaded, options randomized');
+        });
+    </script>
+</body>
+</html>
